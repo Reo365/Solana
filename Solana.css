@@ -6111,29 +6111,34 @@ bd-body .floating-window {
 
 
 
+/* === SOLANA-LITE PATCH: Remove mouse interaction blockers === */
 
-/* === FIX: Prevent overlay elements from blocking interaction over visualMediaItemContainer === */
-
-/* 레이어 및 배경 오버레이 요소에서 마우스 이벤트 제거 */
+/* 레이어, 백드롭, 팝업 계열 요소에서 마우스 이벤트 차단 해제 */
 .layer__6b5c3,
 .backdrop__1a911,
-.backdropWithLayer__9c574 {
-    pointer-events: none !important;
-    z-index: 0 !important;
-}
-
-/* 다양한 오버레이 계열 클래스에서 마우스 이벤트 제거 */
+.backdropWithLayer__9c574,
 [class*="overlay"],
 [class*="glass"],
 [class*="floating"],
 [class*="shade"],
 [class*="modal"],
-[class*="popup"] {
+[class*="popup"],
+[class*="backdrop"],
+[class*="layer"] {
     pointer-events: none !important;
     z-index: 0 !important;
 }
 
-/* 핵심 요소 위 클릭 방지를 막기 위해 z-index 하향 */
+/* visualMediaItemContainer 위 클릭 방해 방지 */
 .visualMediaItemContainer_f4758a {
     z-index: 0 !important;
 }
+
+/* 루트 컨테이너는 마우스 이벤트 허용 */
+.appMount__51fd7 {
+    pointer-events: auto !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 0 !important;
+}
+
