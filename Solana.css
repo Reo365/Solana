@@ -6105,3 +6105,25 @@ bd-body .floating-window {
   font-weight: 600;
   text-transform: capitalize;
 }
+
+
+
+
+
+
+
+
+/* 마우스 이벤트를 막는 레이어 제거 */
+.layer__6b5c3,
+.backdrop__1a911,
+.backdropWithLayer__9c574 {
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+/* 루트 레이어도 겹침 방지를 위해 z-index 낮춤 */
+.layers__1c917 {
+    z-index: 0 !important;
+    pointer-events: none !important;
+}
+
