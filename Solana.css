@@ -480,7 +480,7 @@ body::after {
 }
 
 #app-mount:not(:-webkit-full-screen) .layers__960e4.layers__160d8 {
-  margin-top: var(--window-margin-px);
+  margin-top: 0px;
   margin-bottom: var(--window-margin-px);
   margin-right: var(--window-margin-px);
   margin-left: calc(var(--window-margin-left) * 1px);
