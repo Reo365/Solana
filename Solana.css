@@ -3109,7 +3109,7 @@ html.app-focused .sidebar__23e6b .selected_b3f026.item_b3f026:not([class*=disabl
   align-items: center;
   top: 0;
   width: 200%;
-  padding: 16px;
+  padding: 0px;
   margin-left: -41px;
   z-index: 10;
   -webkit-app-region: drag;
