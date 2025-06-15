@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lagn="ko" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>비바샘 | 즐거운 수업</title>
+	<meta property="og:type" content="website">
+	<meta property="og:image" content="https://www.vivasam.com/resources/images/logoss_2025.png" />
+	<meta name="Keywords" content="비상교육, 비바샘, 비바샘, 교수지원, 스마트 교수지원, 비상교과서, 문제은행"/>
+	<meta name="description" content="비바샘 선생님을 위한 비상교과서 수업 자료실, 풍성한 문서자료, 문제은행, 멀티미디어 자료 제공">
+	<meta property="og:title" content="비바샘">
+	<meta property="og:url">
+	<meta property="og:site_name" content="비바샘">
+	<meta property="og:description" content="비바샘 선생님을 위한 비상교과서 수업 자료실, 풍성한 문서자료, 문제은행, 멀티미디어 자료 제공">
+	<meta charset="UTF-8" />
+	<meta name="robots" content="ALL">
+	<meta name="viewport" content="width=1540, user-scalable=yes">
+	<meta name="author" content="비상교육">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Script-Type" content="text/javascript" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="/resources/images/favicon.ico">
+	<link rel="stylesheet" type="text/css" href="/resources/plugins/jquery-ui/jquery-ui.min.css"/>
+	<!--공통 필수 css-->
+	<link rel="stylesheet" type="text/css" href="/resources/css/font.css?t=1749992613426">
+	<link rel="stylesheet" type="text/css" href="/resources/css/base.css?t=1749992613426">
+	<link rel="stylesheet" type="text/css" href="/resources/plugins/swiper/swiper.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/resources/css/common.css?t=1749992613426">
+	<link rel="stylesheet" type="text/css" href="/resources/css/sub_layout.css?t=1749992613426">
+	<link rel="stylesheet" type="text/css" href="/resources/css/popup.css?t=1749992613426">
+	<link rel="stylesheet" type="text/css" href="/resources/css/board.css?t=1749992613426">
+	<link rel="stylesheet" type="text/css" href="/resources/css/common2.css?t=1749992613426">
+	<!-- 컨텐츠페이지의 CSS 영역이 들어감 -->
+	
+
+	<!-- 최신 자바스크립트 엔진이 동작하게 추가 -->
+	<script src="/resources/plugins/babel/polyfill.js"></script>
+	<!-- select2.min js사용할때 ie10 에서의 스크립트 버그패치 -->
+	<script src="/resources/plugins/bug/mutationObserver.js"></script>
+
+	<script src="/resources/plugins/jquery/jquery-2.1.1.min.js"></script>
+
+
+	<!-- 전역변수 별도 스크립트 분리 241122 -->
+	<!--<script th:inline="javascript" th:src="@{/resources/js/globals.js}"></script>-->
+
+	<script>
+
+		// 전역 변수
+		window.globals = {
+			elementary: false, // 초등 여부
+			middleHigh: true, // 중고딩 여부
+			elementaryByMemberInfo: false, // schCode 기반 초등 여부
+			middleHighByMemberInfo: false, // schCode 기반 중고딩 여부
+			memberSchCode: null,
+			memberValidYn: null,
+			memberMyTypeCd: null,
+			memberValidExpiredYN: null,
+			memberMlevel: null,
+			login: false, // 로그인 여부
+			studentLogin: false, // 학생 로그인 여부
+			sso: {
+				certify: false, // SSO 통합 여부
+				certify2: false, // SSO 통합 여부
+				required: false // SSO 필수 값 체크 여부
+			},
+			config: {
+				cdnDomain: "https:\/\/dn.vivasam.com",
+				cdnDomain22: "https:\/\/dn22.vivasam.com",
+				cdnDomainStream: "http:\/\/st.vivasam.com",
+				fileDomain: "https:\/\/www.vivasam.com",
+				siteDomain: "www.vivasam.com",
+				siteDomainElementary: "e.vivasam.com",
+				siteDomainMiddleHigh: "v.vivasam.com",
+				siteDomainCommon: "www.vivasam.com",
+				siteDomainSamquiz: "samquiz.vivasam.com",
+				shortUrlDomain: "http:\/\/v-sam.com\/",
+				siteUrl: "https:\/\/www.vivasam.com",
+				sessionDomainName: "vivasam.com",
+				activeEnv: "prod",
+				teachingtoolUrl: "https:\/\/teachingtool.co.kr",
+				teachingtoolLicenseKey: "DVDVBD-WZHANO-RILSBD-MVNSSA"
+			},
+			menu: "MEMBER_LOGIN" // 현재 메뉴 정보
+		};
+		var globalUtils = null
+
+		// SNS LOGIN API KEY
+		var naverKey = "jGyFTvIyjnOLLv_wQmTx";
+		var googleKey = "AIzaSyDuOZ9CzVY6hYWyGK1NYa1stgoANDvor0U";
+		var googleClientUrl = "132848388191-2nmcgb2d1o4gdh1kbj5622balol4jua6.apps.googleusercontent.com";
+		var facebookKey = "916191719038165";
+		var kakaoKey = "2e9c6cde882e76e728de43455d983923";
+		let kakaoRestApiKey = "9373d8199eb97a3661c9e5bb24d12549";
+		let kakaoRedirectUrl = "https:\/\/www.vivasam.com\/member\/sns\/login\/kakao\/callback";
+		let kakaoElementaryRedirectUrl = "https:\/\/e.vivasam.com\/member\/sns\/login\/kakao\/callback";
+		var ipinDocumentDomain = "www.vivasam.com";
+		// 웨일스페이스 API 키
+		var whalespaceClientId = "n6UGCJoiXo4J4IvltYmC";
+		var whalespaceClientSecret = "cqZxsfkDz7";
+		var whalespaceCallbackUrlCommon = "https:\/\/www.vivasam.com\/member\/whalespace\/login\/callback";
+		var whalespaceCallbackUrlEle = "https:\/\/e.vivasam.com\/member\/whalespace\/login\/callback";
+
+		/* // 키파일 정보 원복처리 241127
+		// 추후 유니위즈와 다시 얘기 후 진행 예정
+		// SNS LOGIN API KEY init 처리
+		initGlobalConfig()
+		.then(() => {
+			// console.log('Config initialized');
+			// SNS Key 이용한 변수 활용 로직 추가 할 부분이 있으면 여기에서 처리
+		})
+		.catch(error => {
+			console.error('Error initializing config:', error);
+		});
+		 */
+		 
+		var appHost = (window.globals.config.activeEnv.indexOf('prod') > -1) ? 'prod' : 'dev';
+		const appJsUrl = 'https://dj.vsaidt.com/dynamic/js/' + appHost +'/5';
+		const appScript = document.querySelector('script[src="' + appJsUrl + '"]');
+		if (!appScript) {
+			const appScript = document.createElement("script");
+			appScript.type = 'module';
+			appScript.src = appJsUrl;
+			appScript.defer = false;
+
+			const memberId = "'";
+			appScript.setAttribute('userId', memberId);
+
+			document.head.append(appScript);
+		}
+	</script>
+
+
+	<script>
+		jQuery.browser = {};
+		(function () {
+			jQuery.browser.msie = false;
+			jQuery.browser.version = 0;
+			if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+				jQuery.browser.msie = true;
+				jQuery.browser.version = RegExp.$1;
+			}
+		})();
+	</script>
+	
+	
+		<script async src="https://www.googletagmanager.com/gtag/js?id=2647002570"></script>
+		<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+
+	gtag('config', 'G-HRYH9929GX'); //  초등
+	gtag('config', 'G-SQPSJHDHZM'); // 공통
+    gtag('config', 'G-B7GPBXLL3E'); // 중고등 - 2025 개편 요청사항
+
+	var _menuLabels = ["\uD68C\uC6D0","\uB85C\uADF8\uC778"]; // 현재 메뉴 ~ 최상위 메뉴의 라벨 정보
+
+// 메뉴 라벨 정보가 있는 경우 구글 통계를 남긴다.
+if (_menuLabels != null && _menuLabels.length > 0) {
+	for (var i = 0; i < _menuLabels.length; i++) {
+		var _menuLabel = _menuLabels[i];
+		var groupName = 'contentGroup' + (i + 1);
+        gtag('set', {
+            [groupName]: _menuLabel
+        });
+	}
+}
+// 매번 남기는 페이지 뷰 로그
+gtag('config', 'G-HRYH9929GX', {
+    'send_page_view': true
+});
+</script>
+<!-- 구글 GA 및 로거 스크립트 삽입 -->
+	
+	<script src="/resources/plugins/jquery-ui/jquery-ui.min.js"></script>
+	<script src="/resources/plugins/jquery/jquery.cookie.js"></script>
+	<script src="/resources/plugins/jquery/jquery.validate.js"></script>
+	<script src="/resources/plugins/swiper/swiper-bundle.min.js"></script>
+	<script src="/resources/js/common.js?t=1749992613426"></script>
+	<script src="/resources/js/develop-common.js?t=1749992613426"></script>
+	
+	<script src="/resources/js/sns/facebook.js"></script>
+	<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+	<script src="/resources/js/sns/kakao.js?v=1749992613426"></script>
+	<script src="/resources/js/sns/naverLogin_implicit-1.0.3.js"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script src="https://www.google.com/recaptcha/api.js?render=6Ldh3EUrAAAAAJ3A62QdUy5nEgmnKQ8IjqFvXAZv"></script>
+	<script>
+		let headUrl = "https:\/\/www.vivasam.com";
+		if (headUrl === 'https://localhost:8080') {
+			headUrl = "http://localhost:8080"
+		}
+		var menuType = 'login';
+		var retCnt = null;
+
+		$(function() {
+			$("#loginFrm #userId, #loginFrm #logPw").on('click', function(){
+				$("div.lBox .msg").html('');
+			});
+
+			let idFlag = false;
+			$('#loginFrm').validate({
+				rules : {
+					userId : {
+						required : true,
+						minlength : 4
+					},
+					userPwd : {
+						required : true
+					}
+				},
+				messages : {
+					userId : {
+						required : "아이디를 입력해 주세요.",
+						minlength : "아이디를 입력해 주세요."
+					},
+					userPwd : {
+						required : "비밀번호를 입력해 주세요."
+					}
+				},
+				errorPlacement : function(error, element) {
+					if (element.attr("name") === "userId") {
+						$("div.lBox .msg").html(error.insertBefore(element));
+						$("#loginFrm #userId").focus();
+						idFlag = true;
+					} else {
+						if (idFlag) {
+							$("div.lBox .msg").append("<br/>");
+							$("div.lBox .msg").append(error.insertBefore(element));
+							$("#loginFrm #userId").focus();
+						} else {
+							$("div.lBox .msg").html(error.insertBefore(element));
+							$("#loginFrm #logPw").focus();
+						}
+					}
+				}
+			});
+			// 로그인 버튼 클릭 이벤트
+			$('a.btn_login').click(function() {
+				if (!$('#loginFrm').valid()) {
+					return false;
+				}
+//				_loginInPage();
+				// 로그인 로직 타기 전 구글 reCaptcha 인증 확인
+				reCapt();
+			});
+			var cookieUserId = $.cookie('user_id');
+			if (StringUtils.isNotEmpty(cookieUserId)) {
+				$('#loginFrm').find('input:text').val(cookieUserId);
+				$('#loginFrm #IdSave').prop('checked', true);
+			}
+			$('#loginFrm').find('input:text').focus(function() {
+				if ($.trim(($.cookie('user_id') != 'null'
+						&& $.cookie('user_id') != 'undefined' ? $.cookie('user_id')
+								: '')) == ''
+						&& $(this).val() == '아이디를 입력하세요.') {
+					$(this).val('');
+				}
+			});
+
+			$('#loginFrm').find('input:password').focus(function() {
+				$(this).val('');
+			});
+
+			$('#loginFrm').find('input:text').blur(function() {
+				if ($(this).val() == '') {
+					$(this).val('');
+				}
+			});
+
+			$("#loginFrm #userId").keypress(function(e) {
+				if (e.keyCode == 13) {
+					$("#loginFrm #logPw").focus();
+					return false;
+				}
+			});
+
+			$("#loginFrm #logPw").keypress(function(e) {
+				if (e.keyCode == 13) {
+					$('#loginFrm a.btn_login').click();
+					return false;
+				}
+			});
+
+			showRetCntPopup()
+		});
+
+		function _loginInPage() {
+
+			var id = $.trim($('#loginFrm').find('input:text').val());
+			var pwd = $('#loginFrm').find('input:password').val();
+
+			if ($('#loginFrm #IdSave').is(':checked')) {
+				$.cookie('user_id', id, {
+					expires : 30,
+					path : '/'
+				});
+			} else {
+				$.cookie('user_id', '', {
+					expires : 30,
+					path : '/'
+				});
+			}
+
+			$('#loginFrm').find('input:text').val(id);
+			$('#loginFrm').find('input:password').val(pwd);
+
+			Ajax.execute({
+				url : '/member/signInVivasam.json',
+				data : JSON.stringify({
+					memberId : id,
+					passwd : pwd,
+					goUrl : $('#goURL').val(),
+					tabId : $('#tabId').val()
+				}),
+				contentType : 'application/json',
+				method : 'post',
+				dataType : 'json',
+				success : function(result) {
+					var code = result.response.code;
+					var redirectURL = result.response.redirectURL;
+					var userSchoolLevel = result.response.userSchoolLevel;
+					var msg = result.response.msg;
+					if (code != 'fail') {
+						// 구글 로그인 통계 남김.
+						GoogleAnalyticsUtils.sendLoginInfo();
+						// redirectURL : 로그인 프로세스에서 부여된 리턴 페이지 (우선순위)
+						// goURL : 로그인 전 화면에서 부여한 리턴 페이지
+						if (redirectURL != null && redirectURL != '') {
+							redirectURL = redirectURL.includes("sso") ? redirectURL : decodeURIComponent(result.response.redirectURL);
+							var goURL = $('#goURL').val();
+							var tabId = $('#tabId').val();
+
+							if (redirectURL == '/main' && goURL != '') {
+								// 우선순위인 redirectURL이 default 값인 "/main"인 경우 다음 순위인 goURL 값으로 리턴
+								location.href = goURL;
+							} else {
+								if(redirectURL == '/main') {
+									// goURL이 없으며 redirectURL이 default 값인 "/main"인 경우 학교급에 맞춰 메인 페이지 리턴
+									if(userSchoolLevel == 'HS'){
+										location.href = "//" + globals.config.siteDomainMiddleHigh + "/main.do";
+									} else {
+										location.href = '/main';
+									}
+								} else {
+									/*
+                                    * 2023.6.12 songth 추가 - 샘퀴즈로 로그인 시 GA4 태그 추가
+                                    * */
+									if (goURL.indexOf('samquiz.vivasam.com') > 0) {
+										gtag('event', 'samquiz_login', {
+											'member_id': id
+										});
+									}
+
+									// redirectURL이 있는 경우 우선순위이기 때문에 redirectURL 값의 페이지로 리턴
+									location.href = redirectURL;
+								}
+							}
+						} else {
+							location.href = '/main';
+						}
+					} else {
+						if (code == 'sns_fail') {
+							alert(msg);
+						} else if (msg != null && msg != '') {
+							if (result.response.retCheck == 'false') {
+								if (result.response.retCheckCnt < 5) {
+									if (result.response.retCheckCnt > 0) {
+										$('#retLoginCnt').text(result.response.retCheckCnt);
+										$("#pwd_dialog").show();
+										$("#dialog1").show();
+										$("#dialog2").hide();
+									} else {
+										$("#pwd_dialog").show();
+										$("#dialog2").show();
+										$("#dialog1").hide();
+									}
+								} else {
+									$("div.lBox .msg").html(msg);
+								}
+
+							} else {
+								$("div.lBox .msg").html(msg);
+							}
+						}
+					}
+				}
+			});
+		}
+
+		// 중고등 PC 비밀번호 실패 값 넘어올 경우 노출
+		function showRetCntPopup() {
+			if (retCnt != null) {
+				if (Number(retCnt) < 5) {
+					if (Number(retCnt) > 0) {
+						$('#retLoginCnt').text(retCnt);
+						$("#pwd_dialog").show();
+						$("#dialog1").show();
+						$("#dialog2").hide();
+					} else {
+						$("#pwd_dialog").show();
+						$("#dialog2").show();
+						$("#dialog1").hide();
+					}
+				} else {
+					$("div.lBox .msg").html('아이디 또는 비밀번호가 일치하지 않습니다. 다시 입력해주세요.');
+				}
+			}
+		}
+
+		// 구글 reCaptcha 인증 확인(reCAPTCHA v3는 이전 버전과 달리 사용자에게 별도 액션 요구하지 않고 자동으로 점수 부여하여 봇 차단)
+		function reCapt() {
+			grecaptcha.ready(function() {
+				grecaptcha.execute('6Ldh3EUrAAAAAJ3A62QdUy5nEgmnKQ8IjqFvXAZv', {action: 'submit'}).then(function(token) {	// 공개 사이트키 발송하여 토큰 발급
+					Ajax.execute({	// 발급 받은 토큰을 서버로 발송하여 인증 처리
+						url: '/member/verifyRecaptcha',
+						data: {
+							token: token
+						},
+						type: 'post',
+						async: true,
+						dataType: 'json',
+						success: function(data) {
+							if (Number(data) > 0.5) {	// 0.0(봇일 가능성 높음) & 1.0(사람일 가능성 높음)
+								_loginInPage();			// 기준 충족 시 기존 로그인 로직 실행
+							} else {
+								alert('비정상적인 로그인 시도가 감지되었습니다. 로봇이 아닌 경우 비바샘 고객센터로 문의해주세요.');
+								return;
+							}
+						},
+						error: function (xhr, status, err) {
+							alert('오류가 발생했습니다.');
+						}
+					});
+				});
+			});
+		}
+	</script>
+	<script src="/resources/plugins/jquery/jquery.cookie.js"></script>
+	<script src="/resources/plugins/jquery/jquery.validate.js"></script>
+
+</head>
+<body>
+	<div class="wrap">
+		<div class="header type03">
+			<div class="topWrap">
+	<div class="topbanner mh0">
+		<article>
+			<a href="/vivaclass/introduce#4" target="_blank">
+				<div class="innerBanner">
+					 <img src="/resources/images/main/topbanner_250428.png" alt="비바클래스 오픈예정! 이제 비바샘에서도 만나보세요.">
+				</div>
+			</a>
+			<button type="button" class="bannerBtn" onclick="topBanner();">오늘 다시 보지 않기</button>
+		</article>
+	</div>
+<!--	<div class="topbanner aidt">
+		<article>
+			<a href="/aidt/intro" target="_blank">
+				<div class="innerBanner">
+					<img src="/resources/images/main/topbanner_241202.png" alt="입체적인 수업 지원 비상교육 AI 디지털교과서 지원센터 OPEN">
+				</div>
+			</a>
+			<button type="button" class="bannerBtn" onclick="topBanner();">오늘 다시 보지 않기&nbsp;&nbsp;X</button>
+		</article>
+	</div>-->
+	<div class="top_common">
+		<article>
+			<div class="left_module">
+				<!--			<a th:href="${@globalConfig.siteUrlCommon + '/'}">비바샘 메인</a>-->
+				<a href="https://e.vivasam.com/gate/elementary?url=/main">초등</a>
+				<a href="https://v.vivasam.com/main.do" class="middleHigh"
+				   target="_self">중고등</a>
+				<a href="https://t.vivasam.com/" target="_blank">연수원</a>
+				<a href="https://vivaclass.vivasam.com" target="_blank">비바클래스</a>
+				<!--<a href="https://samquiz.vivasam.com/main" target="_blank">샘퀴즈</a>-->
+				<span href="https://samquiz.vivasam.com/main" target="_blank" class="module_samquiz">샘퀴즈
+				<ul>
+					<li><a href="https://samquiz.vivasam.com/main" target="_blank">초등</a></li>
+					<li><a href="https://v-samquiz.vivasam.com/main" id="mSamquiz" target="_blank">중고등</a></li>
+					<!--					<li><a href="javascript:alert('점검중입니다.');" id="mSamquiz">중고등</a></li>-->
+				</ul>
+			</span>
+				<a href="/openMathCanvas" target="_blank">매쓰캔버스</a>
+				<a href="https://textbook.visang.com/" target="_blank">비상교과서</a>
+				<a href="javascript: goLibrary()" onclick="gtag('event',
+															'비상 전자도서관', {
+															'event_category': '퀵메뉴',
+															'event_label': '비상 전자도서관'
+															});">전자도서관</a>
+
+				<a href="https://e.vivasam.com/visangTextbook/2022/intro" target="_blank"> 22 개정 교과서 전시관</a>
+				<a href="/aidt/intro" target="_blank">AI 디지털교과서 지원센터</a>
+
+			</div>
+			<div class="right_module">
+				<div class="login_before"> <!--로그인 전-->
+					<a href="/member/login" class="on">로그인</a>
+					<a href="/member/join/select">회원가입</a>
+					<a href="/samter/event/list">비바샘터</a>
+					<!-- <a href="/newCharacter/2023" target="_blank">비버샘 소개</a> -->
+					<a href="/support/notice/list" target="_blank">고객센터</a>
+				</div>
+				
+			</div>
+		</article>
+
+		<!-- 전자도서관 연결을 위한 폼이다!!!  -->
+		<form name="fm" action="" method="post">
+			
+			<input type="hidden" id="param_1" name="param_1" value=""/>
+			<input type="hidden" id="param_2" name="param_2" value="" />
+			
+			<input type="hidden" id="param_3" name="param_3" value=""/>
+			<input type="hidden" id="param_4" name="param_4" value="" />
+			<input type="hidden" id="param_5" name="param_5" value="vivasam" />
+		</form>
+	</div>
+</div>
+		</div>
+		<div>
+
+	<div class="content">
+		<input type="hidden" value="goURL=https://v.vivasam.com/educourse/index.do?textbookCd=106468%26lnbCode=10646/file/download?fileId=CN030-473787" id="getQueryString">
+		<div class="member_wrap login">
+			<h1 class="title">로그인</h1>
+			<p class="sub_tit">50만 여개의 교과자료와 다양한 혜택을 만나보실 수 있습니다</p>
+			<div class="loginWrap clfix">
+				<form id="loginFrm" name="loginFrm">
+					<input type="hidden" id="goURL" name="goURL" value="https://v.vivasam.com/educourse/index.do?textbookCd=106468&amp;lnbCode=10646/file/download?fileId=CN030-473787"/>
+					<input type="hidden" id="tabId" name="tabId" value=""/>
+					<input type="hidden" id="referer" name="referer" value=""/>
+					<div class="lBox">
+						<input type="text" name="userId" id="userId" value="" class="txt id" placeholder="아이디를 입력하세요." style="ime-mode:disabled;" tabindex="1" />
+						<input type="password" name="userPwd" value="" class="txt" id="logPw" maxlength="20" tabindex="2" placeholder="비밀번호를 입력하세요." />
+						<div class="chk">
+								<span class="chk_box type02">
+									<input type="checkbox" id="IdSave">
+									<label for="IdSave">아이디 저장</label>
+								  </span>
+						</div>
+						<a href="javascript:void(0)" class="btn_login" tabindex="3">로그인하기<i></i></a>
+						<div class="msg"></div>
+
+						
+						<div class="sns_login">
+							<ul>
+								<li class="login_naver">
+										<span id="naver_id_login">
+										</span>
+									<script type="text/javascript" src="/resources/js/sns/naver.js"></script>
+									<script>
+										naver_id_login.setButton("white", 2,40);
+										naver_id_login.setPopup();
+										naver_id_login.init_naver_id_login();
+									</script>
+								</li>
+
+								<li class="login_kakao">
+									<a href="javascript:void(0);" onclick="openKakaoRestLogin()">
+										<img src="/resources/images/member/login_kakao.png" alt="카카오 로그인">
+									</a>
+								</li>
+								<li id="GgCustomLogin" class="c_pointer login_google">
+									<script src="https://accounts.google.com/gsi/client" async defer></script>
+									<script src="/resources/js/sns/google.js"></script>
+									<div id="g_id_onload"
+										 data-client_id="132848388191-2nmcgb2d1o4gdh1kbj5622balol4jua6.apps.googleusercontent.com"
+										 data-ux_mode="popup"
+										 data-callback="onSignIn"
+										 data-auto_prompt="false">
+									</div>
+									<div class="login_google g_id_signin"
+										 data-type="icon"
+										 data-theme="outline"
+										 data-size="large"
+										 data-shape="square"
+										 data-logo_alignment="center">
+									</div>
+								</li>
+								<!-- 웨일 스페이스 -->
+								<script src="/resources/js/sns/whalespace.js"></script>
+								<li id="WhCustomLogin" class="c_pointer login_whale" onclick="whalespaceOAuth()">
+									<img src="/resources/images/member/login_whale.png" alt="웨일스페이스 로그인">
+								</li>
+								<!-- //웨일 스페이스 -->
+							</ul>
+						</div>
+
+						<div class="linkbtn">
+							<a href="/member/join/select">회원가입</a>
+							<a href="/member/idpw_search">아이디/비밀번호 찾기</a>
+						</div>
+					</div>
+				</form>
+
+				<div class="rBox">
+					<img src="/resources/images/common/login_banner.png">
+
+					<!-- [스승의날 이벤트 | 한정] -->
+					<!--<a href="/event/2023/viewEvent449" target="_blank">
+                        <img src="../../images/common/login_banner_230512.png" th:src="@{/resources/images/common/login_banner_230512.png}" alt="추천하면 할수록 쏟아지는 선물 - 스승의 날 선물대잔치 이벤트">
+                    </a>-->
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="pwd_dialog" style="display: none">
+		<script>
+	$(function(){
+	})
+
+	function closeDialog() {
+		$("#pwd_dialog").hide();
+	}
+
+	function moveIdSearch() {
+		$("#pwd_dialog").hide();
+		location.href = '/member/idpw_search';
+	}
+
+	function moveTempPwd() {
+		$("#pwd_dialog").hide();
+		location.href = '/member/temp_pw_issued';
+	}
+
+	function moveLogin() {
+		$("#pwd_dialog").hide();
+		location.href = '/member/login';
+	}
+</script>
+<div id="dialog-confirm" class="dialogPopup">
+	<div class="popInner" id="dialog1" style="display: none">
+		<button type="button" class="btnPopClose" onclick="closeDialog()"></button>
+		<div class="txtBox">
+			<p>
+				입력하신 아이디 또는<br>
+				비밀번호가 <strong>일치하지 않습니다.</strong><br>
+				다시 입력해 주세요.
+			</p>
+			<p class="subTxt">
+				(남은 시도 횟수 : <span id="retLoginCnt"></span>회)
+			</p>
+		</div>
+		<div class="btnBox">
+			<a href="javascript:void(0);" class="btn blue" onclick="moveLogin()">다시 시도하기</a>
+			<a href="javascript:void(0);" class="btn gray" onclick="moveIdSearch()">아이디/비밀번호 찾기</a>
+		</div>
+	</div>
+	<div class="popInner" id="dialog2" style="display: none">
+		<button type="button" class="btnPopClose" onclick="closeDialog()"></button>
+		<div class="txtBox">
+			<p>
+				입력하신 아이디 또는<br>
+				비밀번호 오류로 <br>
+				<strong>로그인이 제한되었습니다.</strong>
+			</p>
+			<p class="subTxt">
+				[임시 비밀번호 발급] 버튼을 눌러,<br>
+				등록하신 휴대폰 번호로<br>
+				임시 비밀번호를 받으실 수 있습니다.
+			</p>
+		</div>
+		<div class="btnBox">
+			<a href="javascript:void(0);" class="btn blue" onclick="moveIdSearch()">아이디 찾기</a>
+			<a href="javascript:void(0);" class="btn gray" onclick="moveTempPwd()">임시 비밀번호 발급</a>
+		</div>
+	</div>
+</div>
+	</div>
+</div>
+		<div class="footer">
+	<div class="footwrap">
+		<h2>
+			<img src="/resources/images/common/logo_visang3.png" alt="비상" />
+		</h2>
+		<div class="info">
+			<ul>
+				<li><a href="https://www.visang.com/pageLoad?page_id=kr/main" target="_blank">회사소개</a></li>
+				<li><a href="/support/question/form">문의하기</a></li>
+				<li><a href="/support/contact/list">찾아오시는 길</a></li>
+				<li><a href="/public/terms">이용약관</a></li>
+				<li><a href="/public/privacy" class="bold">개인정보처리방침</a></li>
+
+			</ul>
+			<span>㈜비상교육 대표자명 : 양태회</span><span>사업자등록번호 : 211-87-07735</span> <br> <span>경기 과천시 과천대로2길 54 그라운드브이 14층</span> <span>TEL : 1544-7714(선생님 전용 고객센터),  1661-0777(AI디지털교과서 공동 고객센터)</span>
+<!--			<span>MAIL : <a href="mailto:vivasam@visang.com">vivasam@visang.com</a></span>-->
+			<p class="copy">COPYRIGHT(C) (주)비상교육 ALL RIGHTS RESERVED.</p>
+		</div>
+		<div class="btns">
+			<a href="http://bookstore.visang.com/BookStore_list.asp?CateCode=BS0801&MGubun=X" target="_blank" class="btn_buy">교과서/지도서 구매</a>
+			<div class="slt">
+				<p class="t">
+					<a href="#"><span>FAMILY SITE</span></a>
+				</p>
+				<div style="display: none;">
+					<!-- <ul>
+						<li><a href="http://www.visang.com" target="_blank">비상교육</a></li>
+						<li><a href="http://www.wanja.co.kr" target="_blank">완자</a></li>
+						<li><a href="http://www.isoobakc.com" target="_blank">아이수박씨</a></li>
+						<li><a href="http://www.soobakc.com" target="_blank">수박씨닷컴</a></li>
+						<li><a href="http://www.visangcampus.com" target="_blank">비상에듀학원</a></li>
+						<li><a href="http://www.ivytz.com/Intro/" target="_blank">비상아이비츠</a></li>
+						<li><a href="http://www.gongbunjin.com" target="_blank">공부엔진</a></li>
+						<li><a href="http://www.momntalk.com" target="_blank">맘앤톡</a></li>
+						<li><a href="http://www.math-can.com" target="_blank">매쓰캔</a></li>
+						<li><a href="http://ipsi.visang.com" target="_blank">비상모의고사</a></li>
+					</ul> -->
+					<ul>
+						<!--<li><a href="http://www.visang.com" target="_blank" title="비상교육">비상교육</a></li>
+						<li><a href="http://book.visang.com/Index.aspx" target="_blank" title="비상교재">비상교재</a></li>
+						<li><a href="http://textbook.visang.com/" target="_blank" title="비상교과서">비상교과서</a></li>
+						<li><a href="http://www.wanja.co.kr" target="_blank">완자</a></li>
+						 <li><a href="http://www.isoobakc.com" target="_blank">아이수박씨</a></li>
+						<li><a href="http://www.soobakc.com" target="_blank">수박씨닷컴</a></li>
+						<li><a href="http://www.visangcampus.com" target="_blank">비상에듀학원</a></li>
+						<li><a href="http://www.ivytz.com/Intro/" target="_blank">비상아이비츠</a></li>
+						<li><a href="http://www.momntalk.com" target="_blank">맘앤톡</a></li>
+						 <li><a href="http://www.math-can.com" target="_blank">매쓰캔</a></li>
+						<li><a href="http://ipsi.visang.com" target="_blank">비상모의고사</a></li>
+						<li><a href="http://www.visangkids.com" target="_blank">Wings</a></li>
+						<li><a href="http://studylab.visang.com" target="_blank">비상 공부연구소</a></li>
+						<li><a href="http://www.soohakplus.com" target="_blank">수학플러스러닝</a></li>-->
+
+
+						<li><a href="http://www.visang.com" target="_blank" title="비상교육(주)">비상교육(주)</a></li>
+						<li><span>출판교육서비스</span></li>
+						<li><a href="http://textbook.visang.com/" target="_blank" title="비상교과서">비상교과서</a></li>
+						<li><a href="http://book.visang.com/" target="_blank" title="비상교재">비상교재</a></li>
+						<li><a href="https://t.vivasam.com/" target="_blank" title="비바샘 원격교육연수원">비바샘 원격교육연수원</a></li>
+						<li><a href="http://bookstore.visang.com/BookStore_list.asp?CateCode=BS0801&MGubun=X" target="_blank" title="비상서점">비상서점</a></li>
+						<li><span>에듀플랫폼</span></li>
+						<li><a href="https://www.only1.co.kr/" target="_blank" title="온리원">온리원</a></li>
+						<li><a href="https://kids.only1.co.kr" target="_blank" title="온리원 키즈">온리원 키즈</a></li>
+						<li><a href="https://www.pionada.com" target="_blank" title="피어나다">피어나다</a></li>
+						<li><a href="https://www.allviaedu.com" target="_blank" title="올비아"> 올비아</a></li>
+						<li><a href="https://www.masterTOPIK.com" target="_blank" title="마스터토픽">마스터토픽</a></li>
+						<li><a href="https://www.masterkorean.vn/" target="_blank" title="마스터코리안">마스터코리안</a></li>
+						<li><span>교육기관</span></li>
+						<li><a href="https://www.englisheye.co.kr" target="_blank" title="마스터코리안">잉글리시아이</a></li>
+						<li><a href="https://www.visangelif.com" target="_blank" title="엘리프어학원">엘리프어학원</a></li>
+						<li><a href="https://www.ebsnurisam.com" target="_blank" title="EBS누리샘">EBS누리샘</a></li>
+						<li><a href="https://tikitoki.ebsnurisam.com" target="_blank" title="티키토키">티키토키</a></li>
+						<li><a href="https://brand.soohakplus.com/Intro/Default.aspx" target="_blank" title="수학플러스러닝">수학플러스러닝</a></li>
+						<li><a href="http://www.ivytz.com" target="_blank" title="비상아이비츠">비상아이비츠</a></li>
+						<li><span>학부모교육/교육문화체험</span></li>
+						<li><a href="http://www.jumpsky.co.kr" target="_blank" title="점프스카이">점프스카이</a></li>
+						<li><span>인쇄시설</span></li>
+						<li><a href="http://www.terabooks.co.kr" target="_blank" title="테라북스">테라북스</a></li>
+
+						<!--  <li><a href="http://www.wanja.co.kr" target="_blank">완자</a></li> -->
+						<!-- <li><a href="http://www.isoobakc.com" target="_blank">아이수박씨</a></li> -->
+						<!-- <li><a href="http://www.visangcampus.com" target="_blank">비상에듀학원</a></li> -->
+
+
+						<!-- <li><a href="http://www.math-can.com" target="_blank">매쓰캔</a></li> -->
+						<!-- <li><a href="http://ipsi.visang.com" target="_blank">비상모의고사</a></li> -->
+						<!-- <li><a href="http://www.visangkids.com" target="_blank">Wings</a></li> -->
+						<!-- <li><a href="http://studylab.visang.com" target="_blank">비상 공부연구소</a></li> -->
+
+<!--						<li><a href="https://www.tschool.net/" target="_blank">비상 티스쿨</a></li>-->
+
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 에듀테크 기업 선정 푸터 배너 -->
+		<div class="footerBnr">
+			<button type="button" onclick="document.getElementById('footerBannerPopup').style.display='block'">
+				<img src="/resources/images/main/popup/250507/banner.png" alt="2025년 세계 최고 에듀테크 기업">
+			</button>
+		</div>
+		<!-- //에듀테크 기업 선정 푸터 배너 -->
+	</div>
+	<!-- 에듀테크 기업 선정 팝업 -->
+	<div class="footerBannerPopup" id="footerBannerPopup" style="display:none;">
+		<div class="dimmed2"></div>
+		<div class="popInner">
+			<img src="/resources/images/main/popup/250507/popup.png" alt="2025년 세계 최고 에듀테크 기업 선정!">
+			<button type="button" class="btnPopClose" onclick="document.getElementById('footerBannerPopup').style.display='none'"><span class="blind">팝업 닫기</span></button>
+		</div>
+	</div>
+	<!-- //에듀테크 기업 선정 팝업 -->
+</div>
+	</div>
+</body>
+</html>
